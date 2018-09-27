@@ -92,8 +92,12 @@ class VersionFS(LoggingMixIn, Operations):
         return os.rmdir(full_path)
 
     def mkdir(self, path, mode):
-        # print "mkdir:", path, mode
-        return os.mkdir(self._full_path(path), mode)
+        print ("mkdir:", path, mode)
+        if (str(path).endswith(".previousversions")):
+            # Prevent the user from creating a .previousversions
+            raise Exception("Invalid directory name")
+        else:
+            return os.mkdir(self._full_path(path), mode)
 
     def statfs(self, path):
         # print "statfs:", path
