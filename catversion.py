@@ -14,16 +14,20 @@ elif os.path.exists(str(sys.argv[1])):
     if not os.path.exists(os.path.join(path_dir, '.previousversions', path_file)):
         print("No previous versions found")
     else:
-        foundVersion = False
+        versions = []
         for version_file in os.listdir(os.path.join(path_dir, '.previousversions', path_file)):
-            if version_file.isdigit() and int(version_file) == int(sys.argv[2]):
-                # found the version!
-                f = open(os.path.join(path_dir, '.previousversions', path_file, version_file), 'r')
-                print(f.read())
-                f.close()
-                foundVersion = True
-        if not foundVersion:
-            raise Exception("Version number doesn't exist")
+            if version_file.isdigit():
+                # version_file_path = os.path.join(path_dir, '.previousversions', path_file, version_file)
+                versions.append(int(version_file))
 
+        versions.sort(reverse=True)
+
+        if int(sys.argv[2]) <= 6 and int(sys.argv[2]) <= len(versions) and int(sys.argv[2]) > 0:
+            file_number = str(versions[int(sys.argv[2]) - 1])
+            f = open(os.path.join(path_dir, '.previousversions', path_file, file_number), 'r')
+            print(f.read())
+            f.close()
+        else:
+            raise Exception("Version number doesn't exist / is invalid")
 else:
     raise Exception("Invalid path")

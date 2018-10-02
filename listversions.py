@@ -17,12 +17,14 @@ elif os.path.exists(str(sys.argv[1])):
         versions = []
         for version_file in os.listdir(os.path.join(path_dir, '.previousversions', path_file)):
             if version_file.isdigit():
-                version_file_path = os.path.join(path_dir, '.previousversions', path_file, version_file)
-                versions.append("Version " + version_file + ", modified " + time.ctime(os.path.getmtime(version_file_path)))
+                # version_file_path = os.path.join(path_dir, '.previousversions', path_file, version_file)
+                versions.append(int(version_file))
 
-        versions.sort()
+        versions.sort(reverse = True)
 
+        versionCount = 1
         for version in versions:
-            print(version)
+            print(path_file + "." + str(versionCount))
+            versionCount += 1
 else:
     raise Exception("Invalid path")
