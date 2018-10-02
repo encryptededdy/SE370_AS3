@@ -15,6 +15,7 @@ import logging
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
+# Modified by: Edward Zhang, ezha210
 
 class VersionFS(LoggingMixIn, Operations):
     def __init__(self):
@@ -40,9 +41,9 @@ class VersionFS(LoggingMixIn, Operations):
     # ==================
 
     def access(self, path, mode):
-        # print "access:", path, mode
+        print ("access:", path, mode)
         full_path = self._full_path(path)
-        if not os.access(full_path, mode):
+        if not os.access(full_path, mode) or ".previousversions" in full_path:
             raise FuseOSError(errno.EACCES)
 
     def chmod(self, path, mode):
@@ -71,7 +72,8 @@ class VersionFS(LoggingMixIn, Operations):
         if os.path.isdir(full_path):
             dirents.extend(os.listdir(full_path))
         for r in dirents:
-            yield r
+            if ".previousversions" not in r:
+                yield r
 
     def readlink(self, path):
         # print "readlink:", path
@@ -179,13 +181,15 @@ class VersionFS(LoggingMixIn, Operations):
         # else:
             # print("Detected ", os.path.join(os.getcwd(), '.versiondir', path_dir, '.previousversions', path_file))
 
+        versions = []
+
         # find the greatest version that already exists
         existing_version_count = 0
         for version_file in os.listdir(os.path.join(os.getcwd(), '.versiondir', path_dir, '.previousversions', path_file)):
             if version_file.isdigit():
+                versions.append(int(version_file))
                 if int(version_file) > existing_version_count:
                     existing_version_count = int(version_file)
-
 
         # make a copy and store it, with version+1
         original_file_path = os.path.join(os.getcwd(), '.versiondir', path_dir, path_file)
@@ -195,8 +199,19 @@ class VersionFS(LoggingMixIn, Operations):
         if existing_version_count == 0 or not filecmp.cmp(original_file_path, existing_version_file_path):
             print("Copying from ", original_file_path, " to ", new_version_file_path)
             shutil.copyfile(original_file_path, new_version_file_path)
+            versions.append(existing_version_count+1)
         else:
             print("No changed detected, not copying")
+
+        # sort versions
+        versions.sort()
+
+        # loop through deleting old versions until we have only 6 left
+        while len(versions) > 6:
+            to_delete = versions.pop(0)
+            version_to_delete_path = os.path.join(os.getcwd(), '.versiondir', path_dir, '.previousversions', path_file,
+                                                  str(to_delete))
+            os.remove(version_to_delete_path)
 
         return os.close(fh)
 
