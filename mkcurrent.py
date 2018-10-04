@@ -25,7 +25,7 @@ elif os.path.exists(str(sys.argv[1])):
 
         if int(sys.argv[2]) <= 6 and int(sys.argv[2]) <= len(versions) and int(sys.argv[2]) > 0:
             file_number = str(versions[int(sys.argv[2]) - 1])
-            source = os.path.join(path_dir, '.previousversions', path_file, file_number), 'r'
+            source = os.path.join(path_dir, '.previousversions', path_file, file_number)
             dest = str(sys.argv[1])
             shutil.copyfile(source, dest)
 
