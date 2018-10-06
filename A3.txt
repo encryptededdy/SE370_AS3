@@ -1,3 +1,5 @@
+Edward Zhang (ezha210)
+
 > Discuss the pros and cons of deleting all versions of a file is deleted in the mount directory
 
 Whether you delete all versions or not really depends on the intended use of your versioning system. 
