@@ -1,0 +1,9 @@
+> Discuss the pros and cons of deleting all versions of a file is deleted in the mount directory
+
+Whether you delete all versions or not really depends on the intended use of your versioning system. 
+
+Of course, there are obvious pros to keeping all versions when deleted: We can still see the history, and we can still use our versioning system to recover old versions, even when files are deleted. This means that deleted files can be recovered too. If the intent of our versioning system is to protect against mistakes or to recover from security intrusions (self-securing storage), then keeping all deleted versions is likely the best choice.
+
+However, there are downsides to keeping all versions on deletion - the most obvious one being the amount of disk space required to store the versions, especially if files are reguarly deleted on the system. Imagine an application that uses part of the versioned FS for storing temporary files with short lifetimes... this would cause the versioning system to create an excessive amount of versions, wasting disk space.
+
+Keeping deleted versions also brings up an implementation problem - if a file with name x is deleted, then a new file created with the same name, is the old file a prior version of the current file, or should we treat it seperately, as a different file? What happens if we move a file out of a directory ("deleting" it), then move it back in ("creating" it)?
